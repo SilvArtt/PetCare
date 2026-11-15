@@ -1,0 +1,396 @@
+/* ============================================
+   RESET E VARIÁVEIS
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4CAF50;
+    --primary-dark: #388E3C;
+    --primary-light: #81C784;
+    --secondary-color: #FF9800;
+    --text-color: #333;
+    --text-light: #666;
+    --bg-color: #f0f7f4;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* ============================================
+   HEADER + NAV
+   ============================================ */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.header-container {
+    flex-shrink: 0;
+}
+
+.brand {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: opacity 0.2s;
+}
+.brand:hover {
+    opacity: 0.8;
+}
+
+.brand h1 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+.brand p {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 2px;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-link {
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.nav-link:hover {
+    background: var(--bg-color);
+    color: var(--primary-dark);
+}
+
+/* Link ativo — apagado e não clicável */
+.nav-link.active {
+    background: transparent;
+    color: var(--primary-color);
+    opacity: 0.45;
+    font-weight: 700;
+    pointer-events: none;
+    cursor: default;
+}
+
+.user-pf {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-color);
+    padding: 8px 8px 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+.user-pf:hover {
+    background: #e3f1ea;
+    border-color: var(--primary-light);
+}
+.user-pf p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin: 0;
+}
+
+.logout-btn {
+    padding: 6px 14px;
+    background: #e53935;
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.logout-btn:hover {
+    background: #c62828;
+}
+
+/* ============================================
+   MAIN
+   ============================================ */
+main {
+    width: 100%;
+}
+
+/* ============================================
+   WELCOME
+   ============================================ */
+.welcome-container {
+    max-width: 1100px;
+    margin: 60px auto 0;
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.welcome-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+.welcome-container h1 span {
+    color: var(--primary-color);
+}
+
+/* ============================================
+   DASHBOARD
+   ============================================ */
+.dashboard-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+.dashboard-container > p {
+    font-size: 1.15rem;
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 50px;
+    font-weight: 500;
+}
+
+.option-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 40px 24px;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+.card:hover::before {
+    transform: scaleX(1);
+}
+.card:active {
+    transform: translateY(-2px);
+}
+
+.body-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.body-card img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    transition: var(--transition);
+    background: var(--bg-color);
+    border-radius: 50%;
+    padding: 12px;
+}
+.card:hover .body-card img {
+    transform: scale(1.08) rotate(-3deg);
+}
+
+.body-card p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+.btn-primary {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-secondary:hover {
+    background: #e68900;
+}
+
+/* ============================================
+   FLASH MESSAGES
+   ============================================ */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 380px;
+}
+
+.flash {
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease;
+}
+
+.flash-sucesso {
+    background: #43a047;
+}
+.flash-erro {
+    background: #e53935;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+@media (max-width: 900px) {
+    header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    .nav-link {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    .brand h1 {
+        font-size: 1.3rem;
+    }
+    .brand p {
+        display: none;
+    }
+    .option-container {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+    .card {
+        padding: 32px 18px;
+    }
+    .body-card img {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 14px 20px;
+    }
+    .user-pf p {
+        display: none;
+    }
+    .welcome-container {
+        margin-top: 24px;
+    }
+    .welcome-container h1 {
+        font-size: 1.4rem;
+    }
+    .dashboard-container > p {
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+    .option-container {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        padding: 28px 20px;
+    }
+}

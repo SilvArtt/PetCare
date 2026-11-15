@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bem-vindo à PetCare</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1>PetCare</h1>
+            <p>Juntos pelo cuidado do seu pet!</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <div class="login-container">
+                <div class="card">
+
+                    <div class="tabs">
+                        <button type="button" class="tab-btn active" data-tab="login">Login</button>
+                        <button type="button" class="tab-btn" data-tab="cadastro">Cadastro</button>
+                    </div>
+
+                    <!-- ABA LOGIN -->
+                    <div id="login" class="tab-content active">
+                        <form id="log-form" action="/login" method="post">
+                            <div class="body-card">
+                                <div class="field">
+                                    <label for="cpf">CPF</label>
+                                    <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00"
+                                        inputmode="numeric" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" autocomplete="off"
+                                        title="Digite os 11 números do CPF" maxlength="14" required />
+                                </div>
+
+                                <div class="field">
+                                    <label for="password">Senha</label>
+                                    <input type="password" name="password" id="password" placeholder="Insira sua senha"
+                                        autocomplete="current-password"
+                                        title="Senha de 8 a 64 caracteres, com maiúscula, minúscula, número e símbolo."
+                                        required />
+                                </div>
+                            </div>
+
+                            <div class="footer-card">
+                                <div class="btn">
+                                    <button type="submit" id="btn-confirm-log">Entrar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ABA CADASTRO -->
+                    <div id="cadastro" class="tab-content">
+                        <form action="/cadastro" method="post">
+                            <div class="body-card">
+
+                                <div class="field">
+                                    <label for="name_cad">Nome Completo</label>
+                                    <input type="text" name="name_cad" id="name_cad"
+                                        pattern="^[A-Za-zÀ-ÿ]+(?:[ '-][A-Za-zÀ-ÿ]+)*$"
+                                        placeholder="Insira seu Nome Completo" title="Digite nome e sobrenome"
+                                        maxlength="255" required />
+                                </div>
+
+                                <div class="field">
+                                    <label for="user_cad">Nome de Usuário</label>
+                                    <input type="text" name="user_cad" id="user_cad" pattern="[A-Za-z0-9._-]{3,30}"
+                                        placeholder="Insira um nome de Usuário" title="Digite um nome de usuário"
+                                        maxlength="30" required />
+                                </div>
+
+                                <div class="field">
+                                    <label for="pass_cad">Senha</label>
+                                    <input type="password" name="pass_cad" id="pass_cad" placeholder="Insira uma Senha"
+                                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,64}$"
+                                        autocomplete="new-password"
+                                        title="Senha de 8 a 64 caracteres, com maiúscula, minúscula, número e símbolo."
+                                        required />
+                                </div>
+
+                                <div class="field">
+                                    <label for="cpf_cad">CPF</label>
+                                    <input type="text" name="cpf_cad" id="cpf_cad" placeholder="000.000.000-00"
+                                        inputmode="numeric" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" autocomplete="off"
+                                        title="Digite os 11 números do CPF" maxlength="14" required />
+                                </div>
+
+                            </div>
+
+                            <div class="footer-card">
+                                <div class="btn">
+                                    <button type="submit" id="btn-confirm-cad">Cadastrar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/static/js/alternar_aba.js"></script>
+</body>
+
+</html>

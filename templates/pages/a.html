@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamentos - PetCare</title>
+    <link rel="stylesheet" href="/static/css/agendamento.css">
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <header>
+        <div class="header-container">
+            <h1>PetCare</h1>
+            <p>Juntos pelo cuidado do seu pet!</p>
+        </div>
+        <nav class="main-nav">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/tutores" class="nav-link">Tutores</a>
+            <a href="/pets" class="nav-link">Pets</a>
+            <a href="/agendamentos" class="nav-link">Agendamentos</a>
+        </nav>
+        <div class="user-pf">
+            <p id="acc-name">Usuário</p>
+            <a href="/logout" class="logout-btn">Sair</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="card-panel lista-panel">
+            <div class="panel-header filtros-header">
+                <h2>Agendamentos</h2>
+                <div class="filtros-container">
+                    <div class="input-icon-group">
+                        <input type="date" id="filtro-data" class="search-input" title="Filtrar por data">
+                    </div>
+                    <div class="input-icon-group">
+                        <select id="filtro-status" class="search-select">
+                            <option value="">Todos os Status</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lista-agendamentos" class="grid-cards"></div>
+        </section>
+
+        <aside class="card-panel form-panel">
+            <div class="panel-header form-header-only">
+                <h2>Novo Agendamento</h2>
+            </div>
+
+            <form action="/agendamentos" method="post" class="form-body" id="agendamento-form">
+                <fieldset class="custom-fieldset">
+                    <legend>Dados do Agendamento</legend>
+
+                    <div class="field">
+                        <label for="pet">Pet</label>
+                        <select name="pet" id="pet" required>
+                            <option value="" disabled selected>Selecione o Pet...</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="servico">Serviço</label>
+                        <select name="servico" id="servico" required>
+                            <option value="" disabled selected>Selecione o Serviço...</option>
+                            <option value="Consulta de Rotina">Consulta de Rotina</option>
+                            <option value="Vacinação">Vacinação</option>
+                            <option value="Banho e Tosa">Banho e Tosa</option>
+                            <option value="Cirurgia">Cirurgia</option>
+                            <option value="Exame">Exame</option>
+                        </select>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="data">Data</label>
+                            <input type="date" name="data" id="data" required>
+                        </div>
+                        <div class="field">
+                            <label for="hora">Horário</label>
+                            <input type="time" name="hora" id="hora" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="obs">Observações <span class="opcional">(opcional)</span></label>
+                        <textarea name="obs" id="obs" rows="3"
+                            placeholder="Ex: Cachorro agressivo, tosse há 3 dias..."></textarea>
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn-outline">Limpar</button>
+                    <button type="submit" class="btn-solid">Agendar</button>
+                </div>
+            </form>
+        </aside>
+    </main>
+
+    <script src="/static/js/agendamento.js"></script>
+    <script src="/static/js/usuario_conectado.js"></script>
+    <script src="/static/js/auto_dismiss.js"></script>
+</body>
+
+</html>

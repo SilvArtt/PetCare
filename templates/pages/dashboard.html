@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | PetCare</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <header>
+        <div class="header-container">
+            <h1>PetCare</h1>
+            <p>Juntos pelo cuidado do seu pet!</p>
+        </div>
+        <nav class="main-nav">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/tutores" class="nav-link">Tutores</a>
+            <a href="/pets" class="nav-link">Pets</a>
+            <a href="/agendamentos" class="nav-link">Agendamentos</a>
+        </nav>
+        <div class="user-pf">
+            <p id="acc-name">Usuário</p>
+            <a href="/logout" class="logout-btn">Sair</a>
+        </div>
+    </header>
+    <main>
+        <section>
+            <div class="welcome-container">
+                <h1>Seja Bem-vindo, <span id="user-name">Usuário</span></h1>
+            </div>
+        </section>
+
+        <section>
+            <div class="dashboard-container">
+                <p>Registre tutores e seus pets, e realize agendamentos</p>
+
+                <!-- Container único com os 3 cards -->
+                <div class="option-container">
+                    <a href="/tutores" class="card">
+                        <div class="body-card">
+                            <img src="/static/assets/tutor_com_pet.svg" alt="Registrar Tutor">
+                            <p>Registrar tutor</p>
+                        </div>
+                    </a>
+
+                    <a href="/pets" class="card">
+                        <div class="body-card">
+                            <img src="/static/assets/pet_interrogacao.svg" alt="Registrar Pet">
+                            <p>Registrar pet</p>
+                        </div>
+                    </a>
+
+                    <a href="/agendamentos" class="card">
+                        <div class="body-card">
+                            <img src="/static/assets/agenda_check.svg" alt="Agendamento">
+                            <p>Agendamento</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/static/js/usuario_conectado.js"></script>
+    <script src="/static/js/auto_dismiss.js"></script>
+</body>
+
+</html>

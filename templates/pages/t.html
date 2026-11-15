@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tutores | Petcare</title>
+    <link rel="stylesheet" href="/static/css/managing.css">
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <header>
+        <div class="header-container">
+            <h1>PetCare</h1>
+            <p>Juntos pelo cuidado do seu pet!</p>
+        </div>
+         <nav class="main-nav">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/tutores" class="nav-link">Tutores</a>
+            <a href="/pets" class="nav-link">Pets</a>
+            <a href="/agendamentos" class="nav-link">Agendamentos</a>
+        </nav>    
+        <div class="user-pf">
+            <p id="acc-name">Usuário</p>
+            <a href="/logout" class="logout-btn">Sair</a>
+        </div>
+    </header>
+    <main class="manager-layout">
+
+        <!-- ================= COLUNA ESQUERDA: LISTA ================= -->
+        <section class="tutor-list-panel">
+            <div class="panel-header">
+                <h2>Tutores Cadastrados</h2>
+                <input type="search" id="tutor-search" placeholder="🔍 Buscar por nome ou CPF...">
+            </div>
+
+            <!-- Container que receberá os cards -->
+            <div id="tutor-list" class="grid-cards"></div>
+        </section>
+
+        <!-- ================= COLUNA DIREITA: FORMULÁRIO ================= -->
+        <aside class="tutor-form-panel">
+            <div class="card form-card">
+                <h2>Adicionar Tutor</h2>
+                <form id="tutor-form" action="/tutor" method="post">
+
+                    <!-- DADOS PESSOAIS -->
+                    <fieldset class="form-section form-grid">
+                        <legend>Dados Pessoais</legend>
+
+                        <!-- Ocupa linha inteira -->
+                        <div class="field full-width">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" name="nome" id="nome" placeholder="Ex: João da Silva" required>
+                        </div>
+
+                        <!-- Metade -->
+                        <div class="field">
+                            <label for="tutor-cpf">CPF</label>
+                            <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" inputmode="numeric"
+                                pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" autocomplete="off" maxlength="14" required>
+                        </div>
+
+                        <!-- Metade -->
+                        <div class="field">
+                            <label for="data_nascimento">Data de Nascimento</label>
+                            <input type="date" name="data_nascimento" id="data_nascimento" required>
+                        </div>
+                    </fieldset>
+
+                    <!-- CONTATO -->
+                    <fieldset class="form-section form-grid">
+                        <legend>Contato</legend>
+
+                        <!-- Ocupa linha inteira -->
+                        <div class="field full-width">
+                            <label for="email">E-mail</label>
+                            <input type="email" name="email" id="email" placeholder="exemplo@email.com" required>
+                        </div>
+
+                        <!-- Ocupa linha inteira (ou pode ser metade, mas como é o último da seção, fica bom inteiro) -->
+                        <div class="field full-width">
+                            <label for="telefone">Telefone/Celular</label>
+                            <input type="text" name="telefone" id="telefone" placeholder="(00) 00000-0000"
+                                maxlength="15" inputmode="numeric" required>
+                        </div>
+                    </fieldset>
+
+                    <!-- ENDEREÇO -->
+                    <fieldset class="form-section form-grid">
+                        <legend>Endereço</legend>
+
+                        <!-- CEP + Número na mesma linha -->
+                        <div class="field">
+                            <label for="cep">CEP</label>
+                            <input type="text" name="cep" id="cep" placeholder="00000-000" inputmode="numeric"
+                                pattern="\d{5}-\d{3}" maxlength="9" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="numero">Número</label>
+                            <input type="text" name="numero" id="numero" inputmode="numeric" placeholder="Ex: 123"
+                                required>
+                        </div>
+
+                        <!-- Rua inteira -->
+                        <div class="field full-width">
+                            <label for="rua">Rua / Logradouro</label>
+                            <input type="text" name="rua" id="rua" placeholder="Av. Paulista" required>
+                        </div>
+
+                        <!-- Complemento inteiro -->
+                        <div class="field full-width">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" name="complemento" id="complemento"
+                                placeholder="Apto, bloco... (opcional)">
+                        </div>
+
+                        <!-- Bairro inteiro -->
+                        <div class="field full-width">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" name="bairro" id="bairro" placeholder="Centro" required>
+                        </div>
+
+                        <!-- Cidade + UF -->
+                        <div class="field">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" name="cidade" id="cidade" placeholder="São Paulo" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="estado">Estado (UF)</label>
+                            <select name="estado" id="estado" required>
+                                <option value="">UF</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn-secondary">Limpar</button>
+                        <button type="submit" class="btn-primary">Salvar Tutor</button>
+                    </div>
+
+                </form>
+            </div>
+        </aside>
+    </main>
+    <script src="/static/js/tutor.js"></script>
+    <script src="/static/js/usuario_conectado.js"></script>
+    <script src="/static/js/auto_dismiss.js"></script>
+</body>
+
+</html>

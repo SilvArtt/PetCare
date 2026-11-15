@@ -1,0 +1,545 @@
+/* ============================================
+   RESET E VARIÁVEIS
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4CAF50;
+    --primary-dark: #388E3C;
+    --primary-light: #81C784;
+    --bg-color: #f4f9f5;
+    --text-main: #2C3E50;
+    --text-muted: #7f8c8d;
+    --border-color: #dcdcdc;
+    --white: #ffffff;
+    --radius-panel: 16px;
+    --radius-input: 8px;
+    --shadow-panel: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --error-color: #e53935;
+    --success-color: #43a047;
+    --transition: all 0.2s ease;
+}
+
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 40px 24px;
+}
+
+/* ============================================
+   HEADER + NAV
+   ============================================ */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 40px;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--primary-color);
+    margin: -40px -24px 24px -24px;
+}
+
+.header-container { flex-shrink: 0; }
+
+.brand {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: opacity 0.2s;
+}
+.brand:hover { opacity: 0.8; }
+
+.brand h1 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+.brand p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-link {
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.nav-link:hover {
+    background: var(--bg-color);
+    color: var(--primary-dark);
+}
+.nav-link.active {
+    background: transparent;
+    color: var(--text-muted);
+    opacity: 0.45;
+    font-weight: 700;
+    pointer-events: none;
+    cursor: default;
+}
+
+.user-pf {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-color);
+    padding: 8px 8px 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+.user-pf:hover {
+    background: #e3f1ea;
+    border-color: var(--primary-light);
+}
+.user-pf p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin: 0;
+}
+
+.logout-btn {
+    padding: 6px 14px;
+    background: #e53935;
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.logout-btn:hover { background: #c62828; }
+
+/* ============================================
+   LAYOUT PRINCIPAL (2 colunas)
+   ============================================ */
+main {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.card-panel {
+    background: var(--white);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-panel);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.panel-header input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+}
+.panel-header input[type="search"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.18);
+}
+
+/* ============================================
+   GRID DE CARDS
+   ============================================ */
+.grid-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
+    padding-right: 4px;
+}
+
+.grid-cards::-webkit-scrollbar { width: 6px; }
+.grid-cards::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+.grid-cards::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+.grid-cards:empty::before {
+    content: "Nenhum registro cadastrado ainda.";
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 60px 20px;
+}
+
+/* ============================================
+   CARD DE TUTOR / PET
+   ============================================ */
+.tutor-card,
+.pet-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: #fafdfb;
+    transition: var(--transition);
+}
+.tutor-card:hover,
+.pet-card:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.tutor-avatar,
+.pet-avatar {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutor-info,
+.pet-info {
+    flex: 1;
+    min-width: 0;
+}
+.tutor-info h3,
+.pet-info h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tutor-info p,
+.pet-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tutor-actions,
+.pet-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+.icon-btn.delete:hover {
+    background: rgba(229, 57, 53, 0.1);
+    border-color: var(--error-color);
+}
+
+/* ============================================
+   FORMULÁRIO
+   ============================================ */
+.form-panel,
+.tutor-form-panel,
+.pet-form-panel {
+    position: sticky;
+    top: 100px;
+}
+
+.card {
+    background: var(--white);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-panel);
+    padding: 28px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.card::-webkit-scrollbar { width: 6px; }
+.card::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.form-card h2 {
+    font-size: 1.35rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.form-section {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    background: #fafdfb;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-section legend {
+    grid-column: 1 / -1;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+    padding: 0 8px;
+    background: var(--white);
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field.full-width {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-input);
+    background: var(--white);
+    color: var(--text-main);
+    outline: none;
+    transition: var(--transition);
+}
+
+.field textarea { resize: none; min-height: 80px; }
+.field input::placeholder,
+.field textarea::placeholder { color: #a0a0a0; }
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover { border-color: var(--primary-light); }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15);
+}
+
+.field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+/* ============================================
+   AÇÕES DO FORMULÁRIO
+   ============================================ */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+    padding-bottom: 4px;
+}
+
+.btn-primary,
+.btn-solid,
+.btn-secondary,
+.btn-outline {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: var(--radius-input);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary,
+.btn-solid {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+    flex: 2;
+}
+.btn-primary:hover,
+.btn-solid:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary,
+.btn-outline {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    flex: 1;
+}
+.btn-secondary:hover,
+.btn-outline:hover {
+    background: #f5f5f5;
+    color: var(--text-main);
+}
+
+/* ============================================
+   FLASH MESSAGES
+   ============================================ */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 380px;
+}
+
+.flash {
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease;
+}
+
+.flash-sucesso { background: #43a047; }
+.flash-erro    { background: #e53935; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0);   opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+@media (max-width: 1024px) {
+    main { grid-template-columns: 1fr; }
+    .form-panel,
+    .tutor-form-panel,
+    .pet-form-panel { position: static; order: -1; }
+    .grid-cards {
+        max-height: none;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .card { max-height: none; overflow-y: visible; }
+}
+
+@media (max-width: 900px) {
+    header { flex-wrap: wrap; gap: 12px; }
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    .nav-link { padding: 6px 12px; font-size: 0.85rem; }
+    .brand h1 { font-size: 1.3rem; }
+    .brand p { display: none; }
+}
+
+@media (max-width: 640px) {
+    body { padding: 20px 16px; }
+    header { margin: -20px -16px 16px -16px; padding: 14px 20px; }
+    .grid-cards { grid-template-columns: 1fr; }
+    .tutor-card, .pet-card { flex-wrap: wrap; }
+    .tutor-actions, .pet-actions { width: 100%; justify-content: flex-end; }
+    .form-section { grid-template-columns: 1fr; }
+    .form-actions { flex-direction: column-reverse; }
+    .form-actions button { width: 100%; }
+    .user-pf p { display: none; }
+}
