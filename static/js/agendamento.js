@@ -1,6 +1,3 @@
-// ============================================
-// Utilitário: fetch com tratamento de 401
-// ============================================
 async function fetchAuth(url, options = {}) {
     const resp = await fetch(url, options);
     if (resp.status === 401) {
@@ -10,9 +7,6 @@ async function fetchAuth(url, options = {}) {
     return resp;
 }
 
-// ============================================
-// Listar agendamentos (com filtros)
-// ============================================
 async function carregarAgendamentos() {
     const data = document.getElementById("filtro-data").value;
     const status = document.getElementById("filtro-status").value;
@@ -38,8 +32,9 @@ async function carregarAgendamentos() {
         card.className = "card-agendamento";
         card.innerHTML = `
             <div class="card-title">${a.servico}<span class="sep">•</span>${a.data} às ${a.horario}</div>
-            <div class="card-tutor">Status: ${a.status}</div>
-            ${a.observacoes ? `<div class="card-obs">${a.observacoes}</div>` : ""}
+            <div class="card-tutor"><strong>Pet:</strong> ${a.pet_nome} • <strong>Status:</strong> ${a.status}</div>
+            ${a.pet_observacoes ? `<div class="card-obs"><strong>⚠️ Alergias/Obs. do pet:</strong> ${a.pet_observacoes}</div>` : ""}
+            ${a.observacoes ? `<div class="card-obs"><strong>Obs. do agendamento:</strong> ${a.observacoes}</div>` : ""}
             <div class="card-info">
                 ${a.status === "Agendado" ? `
                     <button onclick="alterarStatus(${a.id}, 'Concluído')" class="btn-solid" style="padding:6px 12px;font-size:.85rem;">Concluir</button>
@@ -51,19 +46,21 @@ async function carregarAgendamentos() {
     });
 }
 
-// ============================================
-// Alterar status
-// ============================================
 async function alterarStatus(id, novo) {
     const resp = await fetchAuth(`/agendamentos/${id}/status/${encodeURIComponent(novo)}`, { method: "POST" });
     if (resp && resp.ok) {
         carregarAgendamentos();
     }
+    else{
+        try {
+            const erro = await resp.json();
+            alert(erro.erro || "erro ao modificar o status do agendamento")
+        } catch {
+            alert("Erro ao modificar o status do agendamento")
+        }
+    }
 }
 
-// ============================================
-// Popular select de pets
-// ============================================
 async function carregarPetsSelect() {
     const resp = await fetchAuth("/api/pets");
     if (!resp) return;
@@ -79,31 +76,25 @@ async function carregarPetsSelect() {
     });
 }
 
-// ============================================
-// Filtros
-// ============================================
 document.getElementById("filtro-data")?.addEventListener("change", carregarAgendamentos);
 document.getElementById("filtro-status")?.addEventListener("change", carregarAgendamentos);
 
-// ============================================
-// Submit do formulário (cadastro)
-// ============================================
 document.getElementById("agendamento-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const resp = await fetchAuth("/agendamentos", { method: "POST", body: new FormData(e.target) });
     if (!resp) return;
 
+    const data = await resp.json();
+
     if (resp.ok) {
         e.target.reset();
         carregarAgendamentos();
+        alert(data.mensagem || "Agendamento criado com sucesso!");
     } else {
-        alert("Erro ao cadastrar agendamento.");
+        alert(data.erro || "Erro ao cadastrar agendamento.");
     }
 });
 
-// ============================================
-// Ao carregar a página
-// ============================================
 document.addEventListener("DOMContentLoaded", () => {
     carregarAgendamentos();
     carregarPetsSelect();

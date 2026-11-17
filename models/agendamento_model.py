@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 # ============================================================
-# Constantes de status (evita strings soltas no código)
+# Constantes de status
 # ============================================================
 STATUS_AGENDADO = "Agendado"
 STATUS_CONCLUIDO = "Concluído"
@@ -13,7 +13,7 @@ STATUS_VALIDOS = {STATUS_AGENDADO, STATUS_CONCLUIDO, STATUS_CANCELADO}
 
 
 # ============================================================
-# Modelo (dataclass)
+# Modelo (dataclass) — usado só para CADASTRAR/BUSCAR
 # ============================================================
 @dataclass
 class Agendamento:
@@ -27,7 +27,7 @@ class Agendamento:
 
 
 # ============================================================
-# Exceções específicas
+# Exceções
 # ============================================================
 class AgendamentoError(Exception):
     """Erro genérico de regra de negócio do Agendamento."""
@@ -59,6 +59,21 @@ class AgendamentoModel:
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
+    # ---------- Conversão para dict (com JOIN do pet) ----------
+    @staticmethod
+    def _row_para_dict(row: sqlite3.Row) -> dict:
+        return {
+            "id": row["id"],
+            "pet_id": row["pet_id"],
+            "pet_nome": row["pet_nome"] if "pet_nome" in row.keys() else "",
+            "pet_observacoes": row["pet_observacoes"] if "pet_observacoes" in row.keys() else "",
+            "servico": row["servico"],
+            "data": row["data"],
+            "horario": row["horario"],
+            "observacoes": row["observacoes"] or "",
+            "status": row["Status"],
+        }
+
     @staticmethod
     def _row_para_agendamento(row: sqlite3.Row) -> Agendamento:
         return Agendamento(
@@ -68,25 +83,13 @@ class AgendamentoModel:
             data=row["data"],
             horario=row["horario"],
             observacoes=row["observacoes"] or "",
-            status=row["Status"],  # atenção: coluna é "Status" (S maiúsculo no SQL)
+            status=row["Status"],
         )
 
     # ============================================================
-    # CADASTRAR — regra de duplicidade
+    # CADASTRAR
     # ============================================================
     def cadastrar(self, agendamento: Agendamento) -> int:
-        """
-        Insere um agendamento garantindo que:
-          - o pet_id existe;
-          - o status inicial é válido;
-          - NÃO existe outro agendamento do mesmo pet na mesma data+horário.
-
-        :raises PetInexistenteError: se pet_id não existir
-        :raises StatusInvalidoError: se status não estiver em STATUS_VALIDOS
-        :raises AgendamentoDuplicadoError: se já houver agendamento no mesmo slot
-        :return: id do agendamento criado
-        """
-        # 1) Validações básicas
         if not agendamento.pet_id or agendamento.pet_id <= 0:
             raise AgendamentoError("pet_id é obrigatório.")
         if not agendamento.data or not agendamento.horario:
@@ -102,16 +105,12 @@ class AgendamentoModel:
         with self._conectar() as conn:
             cur = conn.cursor()
 
-            # 2) Pet existe?
             cur.execute("SELECT 1 FROM pets WHERE id = ?", (agendamento.pet_id,))
             if cur.fetchone() is None:
                 raise PetInexistenteError(
                     f"Pet id={agendamento.pet_id} não encontrado."
                 )
 
-            # 3) Regra de duplicidade:
-            #    mesmo pet + mesma data + mesmo horário + status != Cancelado
-            #    (um agendamento cancelado libera o slot para reagendamento)
             cur.execute(
                 """
                 SELECT id, status FROM agendamentos
@@ -125,7 +124,6 @@ class AgendamentoModel:
                     "Este pet já possui agendamento nesta data e horário."
                 )
 
-            # 4) Inserção
             cur.execute(
                 """
                 INSERT INTO agendamentos (
@@ -145,25 +143,23 @@ class AgendamentoModel:
             return cur.lastrowid
 
     # ============================================================
-    # LISTAGEM COM FILTROS (data + status) — conforme a.html
+    # LISTAR COM FILTROS + JOIN DO PET (retorna dicts)
     # ============================================================
     def listar_todos(
         self,
         data: str | None = None,
         status: str | None = None,
-    ) -> list[Agendamento]:
+    ) -> list[dict]:
+        sql = """
+            SELECT a.*, p.nome AS pet_nome, p.observacoes AS pet_observacoes
+            FROM agendamentos a
+            INNER JOIN pets p ON p.id = a.pet_id
         """
-        Lista agendamentos com filtros opcionais de data e status
-        (exatamente o que os <input type="date"> e <select> do a.html fazem).
-
-        Ordena por data e horário ascendentes.
-        """
-        sql = "SELECT * FROM agendamentos"
         condicoes: list[str] = []
         params: list = []
 
         if data:
-            condicoes.append("data = ?")
+            condicoes.append("a.data = ?")
             params.append(data)
 
         if status:
@@ -171,18 +167,18 @@ class AgendamentoModel:
                 raise StatusInvalidoError(
                     f"Status '{status}' inválido para filtro."
                 )
-            condicoes.append("Status = ?")
+            condicoes.append("a.Status = ?")
             params.append(status)
 
         if condicoes:
             sql += " WHERE " + " AND ".join(condicoes)
 
-        sql += " ORDER BY data ASC, horario ASC"
+        sql += " ORDER BY a.data ASC, a.horario ASC"
 
         with self._conectar() as conn:
             cur = conn.cursor()
             cur.execute(sql, params)
-            return [self._row_para_agendamento(r) for r in cur.fetchall()]
+            return [self._row_para_dict(r) for r in cur.fetchall()]
 
     # ============================================================
     # BUSCAR
@@ -197,16 +193,9 @@ class AgendamentoModel:
         return self._row_para_agendamento(row) if row else None
 
     # ============================================================
-    # ATUALIZAR STATUS — só Concluído ou Cancelado
+    # ATUALIZAR STATUS
     # ============================================================
     def atualizar_status(self, agendamento_id: int, novo_status: str) -> bool:
-        """
-        Altera o status de um agendamento.
-        Regra: só permite transição para 'Concluído' ou 'Cancelado'.
-
-        :raises StatusInvalidoError: se novo_status não for Concluído/Cancelado
-        :return: True se alterou
-        """
         if novo_status not in (STATUS_CONCLUIDO, STATUS_CANCELADO):
             raise StatusInvalidoError(
                 "O status só pode ser alterado para 'Concluído' ou 'Cancelado'."

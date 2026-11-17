@@ -1,6 +1,3 @@
-// ============================================
-// Utilitário: fetch com tratamento de 401
-// ============================================
 async function fetchAuth(url, options = {}) {
     const resp = await fetch(url, options);
     if (resp.status === 401) {
@@ -10,9 +7,6 @@ async function fetchAuth(url, options = {}) {
     return resp;
 }
 
-// ============================================
-// Listar tutores
-// ============================================
 async function carregarTutores(filtro = "") {
     const url = filtro ? `/api/tutores?q=${encodeURIComponent(filtro)}` : "/api/tutores";
     const resp = await fetchAuth(url);
@@ -34,7 +28,9 @@ async function carregarTutores(filtro = "") {
             <div class="tutor-avatar">${t.nome.charAt(0).toUpperCase()}</div>
             <div class="tutor-info">
                 <h3>${t.nome}</h3>
-                <p>CPF: ${t.cpf} • ${t.email || "sem e-mail"}</p>
+                <p><strong>CPF:</strong> ${t.cpf}</p>
+                <p><strong>Telefone:</strong> ${t.telefone || "não informado"}</p>
+                <p><strong>E-mail:</strong> ${t.email || "sem e-mail"}</p>
             </div>
             <div class="tutor-actions">
                 <button class="icon-btn delete" onclick="excluirTutor(${t.id})">🗑️</button>
@@ -44,9 +40,6 @@ async function carregarTutores(filtro = "") {
     });
 }
 
-// ============================================
-// Excluir tutor
-// ============================================
 async function excluirTutor(id) {
     if (!confirm("Deseja excluir este tutor?")) return;
     const resp = await fetchAuth(`/api/tutores/${id}`, { method: "DELETE" });
@@ -60,30 +53,24 @@ async function excluirTutor(id) {
     }
 }
 
-// ============================================
-// Busca em tempo real
-// ============================================
 document.getElementById("tutor-search")?.addEventListener("input", e => {
     carregarTutores(e.target.value);
 });
 
-// ============================================
-// Submit do formulário (cadastro)
-// ============================================
 document.getElementById("tutor-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const resp = await fetchAuth("/tutor", { method: "POST", body: new FormData(e.target) });
     if (!resp) return;
 
+    const data = await resp.json();
+
     if (resp.ok) {
         e.target.reset();
         carregarTutores();
+        alert(data.mensagem || "Tutor cadastrado com sucesso!");
     } else {
-        alert("Erro ao cadastrar tutor.");
+        alert(data.erro || "Erro ao cadastrar tutor.");
     }
 });
 
-// ============================================
-// Ao carregar a página
-// ============================================
 document.addEventListener("DOMContentLoaded", () => carregarTutores());

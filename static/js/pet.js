@@ -1,6 +1,3 @@
-// ============================================
-// Utilitário: fetch com tratamento de 401
-// ============================================
 async function fetchAuth(url, options = {}) {
     const resp = await fetch(url, options);
     if (resp.status === 401) {
@@ -10,9 +7,6 @@ async function fetchAuth(url, options = {}) {
     return resp;
 }
 
-// ============================================
-// Listar pets
-// ============================================
 async function carregarPets(filtro = "") {
     const url = filtro ? `/api/pets?q=${encodeURIComponent(filtro)}` : "/api/pets";
     const resp = await fetchAuth(url);
@@ -34,7 +28,9 @@ async function carregarPets(filtro = "") {
             <div class="pet-avatar">${p.nome.charAt(0).toUpperCase()}</div>
             <div class="pet-info">
                 <h3>${p.nome}</h3>
-                <p>${p.especie} • ${p.raca || "SRD"} • Tutor: ${p.tutor_nome || "—"}</p>
+                <p>${p.especie} • ${p.raca || "SRD"} • ${p.porte || "Porte não informado"} • ${p.peso ? p.peso + " kg" : "Peso não informado"}</p>
+                <p><strong>Tutor:</strong> ${p.tutor_nome || "—"}</p>
+                ${p.observacoes ? `<p style="color:#e53935;"><strong>⚠️ Obs.:</strong> ${p.observacoes}</p>` : ""}
             </div>
             <div class="pet-actions">
                 <button class="icon-btn delete" onclick="excluirPet(${p.id})">🗑️</button>
@@ -44,24 +40,25 @@ async function carregarPets(filtro = "") {
     });
 }
 
-// ============================================
-// Excluir pet
-// ============================================
 async function excluirPet(id) {
     if (!confirm("Deseja excluir este pet?")) return;
+
     const resp = await fetchAuth(`/pets/${id}/excluir`, { method: "POST" });
     if (!resp) return;
 
     if (resp.ok) {
+        // Sucesso: recarrega a lista
         carregarPets();
     } else {
-        alert("Erro ao excluir. O pet pode ter agendamentos.");
+        // Erro: mostra a mensagem do backend
+        try {
+            const erro = await resp.json();
+            alert(erro.erro || "Erro ao excluir o pet.");
+        } catch {
+            alert("Erro ao excluir o pet.");
+        }
     }
 }
-
-// ============================================
-// Popular select de tutores
-// ============================================
 async function carregarTutoresSelect() {
     const resp = await fetchAuth("/api/tutores");
     if (!resp) return;
@@ -77,37 +74,29 @@ async function carregarTutoresSelect() {
     });
 }
 
-// ============================================
-// Busca em tempo real
-// ============================================
 document.getElementById("pet-search")?.addEventListener("input", e => {
     carregarPets(e.target.value);
 });
 
-// ============================================
-// Submit do formulário (cadastro)
-// ============================================
 document.getElementById("pet-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const resp = await fetchAuth("/cadastro_pet", { method: "POST", body: new FormData(e.target) });
     if (!resp) return;
 
+    const data = await resp.json();
+
     if (resp.ok) {
         e.target.reset();
         carregarPets();
-
-        // Recarrega o select de tutores (porque pode ter mudado)
         const select = document.getElementById("tutor_id");
         select.innerHTML = '<option value="">Selecione o Tutor Responsável...</option>';
         carregarTutoresSelect();
+        alert(data.mensagem || "Pet cadastrado com sucesso!");
     } else {
-        alert("Erro ao cadastrar pet.");
+        alert(data.erro || "Erro ao cadastrar pet.");
     }
 });
 
-// ============================================
-// Ao carregar a página
-// ============================================
 document.addEventListener("DOMContentLoaded", () => {
     carregarPets();
     carregarTutoresSelect();

@@ -53,16 +53,13 @@ def cadastrar_pet():
         )
 
         pet_model.cadastrar(pet)
-        flash("Pet cadastrado com sucesso!", "sucesso")
+        return jsonify({"ok": True, "mensagem": "Pet cadastrado com sucesso!"})
     except TutorObrigatorioError as e:
-        flash(str(e), "erro")
+        return jsonify({"erro": str(e)}), 400
     except PetError as e:
-        flash(str(e), "erro")
+        return jsonify({"erro": str(e)}), 400
     except Exception as e:
-        flash(f"Erro inesperado: {e}", "erro")
-
-    return redirect(url_for("pet.listar_pets"))
-
+        return jsonify({"erro": f"Erro inesperado: {e}"}), 500
 
 # ------------------------------------------------------------
 # POST /pets/<id>/excluir
@@ -70,15 +67,15 @@ def cadastrar_pet():
 @pet_bp.route("/pets/<int:pet_id>/excluir", methods=["POST"])
 def excluir_pet(pet_id):
     if _login_obrigatorio():
-        return redirect(url_for("auth.index"))
+        return jsonify({"erro": "não autenticado"}), 401
 
     try:
         pet_model.deletar(pet_id)
-        flash("Pet removido.", "sucesso")
+        return jsonify({"ok": True, "mensagem": "Pet removido com sucesso."})
     except PetComAgendamentosError as e:
-        flash(str(e), "erro")
-
-    return redirect(url_for("pet.listar_pets"))
+        return jsonify({"erro": str(e)}), 409
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {e}"}), 500
 
 
 # ------------------------------------------------------------
@@ -91,6 +88,14 @@ def api_listar_pets():
 
     # listar_todos() já retorna dicts com tutor_nome incluso
     pets = pet_model.listar_todos()
+    filtro = request.args.get("q", "").strip().casefold()
+
+    if filtro:
+        pets = [
+            pet for pet in pets
+            if filtro in str(pet.get("nome") or "").casefold()
+            or filtro in str(pet.get("tutor_nome") or "").casefold()
+        ]
     return jsonify(pets)
 
 

@@ -394,3 +394,12 @@ main {
         padding: 28px 20px;
     }
 }
+
+/* Garante que o alerta caiba em celulares de 360px */
+@media (max-width: 480px) {
+    .flash-container {
+        left: 16px;
+        right: 16px;
+        max-width: none;
+    }
+}

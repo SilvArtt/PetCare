@@ -44,35 +44,34 @@ def listar_agendamentos():
 
 
 # ------------------------------------------------------------
-# POST /agendamentos (ação do formulário a.html)
+# POST /agendamentos
 # ------------------------------------------------------------
 @agendamento_bp.route("/agendamentos", methods=["POST"])
 def cadastrar_agendamento():
     if _login_obrigatorio():
         return redirect(url_for("auth.index"))
 
-    ag = Agendamento(
-        id=None,
-        pet_id=int(request.form["pet"]) if request.form.get("pet") else 0,
-        servico=request.form["servico"],
-        data=request.form["data"],
-        horario=request.form["hora"],
-        observacoes=request.form.get("obs", ""),
-    )
-
     try:
+        ag = Agendamento(
+            id=None,
+            pet_id=int(request.form["pet"]) if request.form.get("pet") else 0,
+            servico=request.form["servico"],
+            data=request.form["data"],
+            horario=request.form["hora"],
+            observacoes=request.form.get("obs", ""),
+        )
         ag_model.cadastrar(ag)
-        flash("Agendamento criado com sucesso!", "sucesso")
+        return jsonify({"ok": True, "mensagem": "Agendamento criado com sucesso!"})
     except AgendamentoDuplicadoError as e:
-        flash(str(e), "erro")
+        return jsonify({"erro": str(e)}), 400
     except PetInexistenteError as e:
-        flash(str(e), "erro")
+        return jsonify({"erro": str(e)}), 400
     except StatusInvalidoError as e:
-        flash(str(e), "erro")
+        return jsonify({"erro": str(e)}), 400
     except AgendamentoError as e:
-        flash(str(e), "erro")
-
-    return redirect(url_for("agendamento.listar_agendamentos"))
+        return jsonify({"erro": str(e)}), 400
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {e}"}), 500
 
 
 # ------------------------------------------------------------
@@ -93,8 +92,9 @@ def alterar_status(ag_id, novo):
 
     return redirect(url_for("agendamento.listar_agendamentos"))
 
+
 # ------------------------------------------------------------
-# GET /api/agendamentos (com filtros data/status)
+# GET /api/agendamentos (JSON direto com pet_nome)
 # ------------------------------------------------------------
 @agendamento_bp.route("/api/agendamentos")
 def api_listar_agendamentos():
@@ -109,15 +109,4 @@ def api_listar_agendamentos():
     except StatusInvalidoError as e:
         return jsonify({"erro": str(e)}), 400
 
-    return jsonify([
-        {
-            "id": a.id,
-            "pet_id": a.pet_id,
-            "servico": a.servico,
-            "data": a.data,
-            "horario": a.horario,
-            "observacoes": a.observacoes,
-            "status": a.status,
-        }
-        for a in lista
-    ])
+    return jsonify(lista)

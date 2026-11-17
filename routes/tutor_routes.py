@@ -38,29 +38,29 @@ def cadastrar_tutor():
     if _login_obrigatorio():
         return redirect(url_for("auth.index"))
 
-    tutor = Tutor(
-        id=None,
-        nome=request.form["nome"].strip(),
-        cpf=request.form["cpf"].strip(),
-        data_nascimento=request.form.get("data_nascimento", ""),
-        email=request.form.get("email", ""),
-        telefone=request.form.get("telefone", ""),
-        cep=request.form.get("cep", ""),
-        numero=request.form.get("numero", ""),
-        rua=request.form.get("rua", ""),
-        complemento=request.form.get("complemento", ""),
-        bairro=request.form.get("bairro", ""),
-        cidade=request.form.get("cidade", ""),
-        estado=request.form.get("estado", ""),
-    )
+    try:
+        tutor = Tutor(
+            id=None,
+            nome=request.form["nome"].strip(),
+            cpf=request.form["cpf"].strip(),
+            data_nascimento=request.form.get("data_nascimento", ""),
+            email=request.form.get("email", ""),
+            telefone=request.form.get("telefone", ""),
+            cep=request.form.get("cep", ""),
+            numero=request.form.get("numero", ""),
+            rua=request.form.get("rua", ""),
+            complemento=request.form.get("complemento", ""),
+            bairro=request.form.get("bairro", ""),
+            cidade=request.form.get("cidade", ""),
+            estado=request.form.get("estado", ""),
+        )
 
-    novo_id = tutor_model.cadastrar(tutor)
-    if novo_id is None:
-        flash("CPF já cadastrado.", "erro")
-    else:
-        flash("Tutor cadastrado com sucesso!", "sucesso")
-
-    return redirect(url_for("tutor.listar_tutores"))
+        novo_id = tutor_model.cadastrar(tutor)
+        if novo_id is None:
+            return jsonify({"erro": "CPF já cadastrado."}), 400
+        return jsonify({"ok": True, "mensagem": "Tutor cadastrado com sucesso!"})
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {e}"}), 500
 
 
 # ------------------------------------------------------------

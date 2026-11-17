@@ -299,4 +299,9 @@ main {
     .footer-card { padding: 6px 20px 22px; }
     .tab-btn { padding: 14px; font-size: 0.95rem; }
     .field input { padding: 11px 14px; font-size: 16px; }
+    .flash-container {
+        left: 16px;
+        right: 16px;
+        max-width: none;
+    }
 }
