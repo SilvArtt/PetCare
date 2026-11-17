@@ -34,7 +34,7 @@ def listar_agendamentos():
     pets = pet_model.listar_todos()
 
     return render_template(
-        "pages/a.html",
+        "pages/agendamento.html",
         agendamentos=lista,
         pets=pets,
         filtro_data=filtro_data or "",

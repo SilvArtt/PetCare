@@ -24,7 +24,7 @@ def listar_tutores():
     tutores = tutor_model.listar(filtro=filtro)
 
     return render_template(
-        "pages/t.html",
+        "pages/tutor.html",
         tutores=tutores,
         filtro=filtro,
     )

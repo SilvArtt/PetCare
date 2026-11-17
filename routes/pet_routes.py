@@ -25,7 +25,7 @@ def listar_pets():
     if _login_obrigatorio():
         return redirect(url_for("auth.index"))
 
-    return render_template("pages/p.html")
+    return render_template("pages/pet.html")
 
 
 # ------------------------------------------------------------
