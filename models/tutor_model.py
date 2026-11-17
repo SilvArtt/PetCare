@@ -32,11 +32,25 @@ class TutorModel:
     # ---------- Cadastro ----------
     def cadastrar(self, tutor: Tutor) -> int | None:
         """
-        Insere um tutor. Retorna o ID gerado ou None se o CPF já existir.
+        Insere um tutor. Retorna o ID gerado ou None se:
+          - o CPF já existir na tabela tutores;
+          - o CPF já existir na tabela usuarios.
         """
-        try:
-            with self._conectar() as conn:
-                cur = conn.cursor()
+        with self._conectar() as conn:
+            cur = conn.cursor()
+
+            # 1) Verifica se o CPF já existe como tutor
+            cur.execute("SELECT 1 FROM tutores WHERE cpf = ?", (tutor.cpf,))
+            if cur.fetchone() is not None:
+                return None  # CPF já cadastrado como tutor
+
+            # 2) Verifica se o CPF já existe como usuário
+            cur.execute("SELECT 1 FROM usuarios WHERE cpf = ?", (tutor.cpf,))
+            if cur.fetchone() is not None:
+                return None  # CPF já cadastrado como usuário
+
+            # 3) Inserção
+            try:
                 cur.execute(
                     """
                     INSERT INTO tutores (
@@ -53,8 +67,8 @@ class TutorModel:
                 )
                 conn.commit()
                 return cur.lastrowid
-        except sqlite3.IntegrityError:
-            return None  # CPF duplicado
+            except sqlite3.IntegrityError:
+                return None  # CPF duplicado na tabela de tutores
 
     # ---------- Busca individual ----------
     def buscar_por_id(self, tutor_id: int) -> Tutor | None:

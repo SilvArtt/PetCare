@@ -59,13 +59,28 @@ class UserModel:
     def cadastrar(self, nome: str, username: str, cpf: str, senha: str) -> int | None:
         """
         Cria um novo usuário criptografando a senha.
-        Retorna o ID do usuário criado, ou None se o CPF/username já existir.
+        Retorna o ID do usuário criado, ou None se:
+          - o CPF já existir na tabela usuarios;
+          - o CPF já existir na tabela tutores;
+          - o username já existir.
         """
         senha_hash = self.gerar_hash(senha)
 
-        try:
-            with self._conectar() as conn:
-                cur = conn.cursor()
+        with self._conectar() as conn:
+            cur = conn.cursor()
+
+            # 1) Verifica se o CPF já existe como usuário
+            cur.execute("SELECT 1 FROM usuarios WHERE cpf = ?", (cpf,))
+            if cur.fetchone() is not None:
+                return None  # CPF já cadastrado como usuário
+
+            # 2) Verifica se o CPF já existe como tutor
+            cur.execute("SELECT 1 FROM tutores WHERE cpf = ?", (cpf,))
+            if cur.fetchone() is not None:
+                return None  # CPF já cadastrado como tutor
+
+            # 3) Inserção
+            try:
                 cur.execute(
                     """
                     INSERT INTO usuarios (nome, username, cpf, senha)
@@ -75,12 +90,12 @@ class UserModel:
                 )
                 conn.commit()
                 return cur.lastrowid
-        except sqlite3.IntegrityError:
-            # CPF ou username já cadastrado
-            return None
+            except sqlite3.IntegrityError:
+                # username duplicado (o CPF já foi verificado acima)
+                return None
 
     def autenticar_por_cpf(self, cpf: str, senha: str) -> User | None:
-        """Variante que autentica pelo CPF (útil se o login for por CPF)."""
+        """Autentica pelo CPF (usado no login)."""
         with self._conectar() as conn:
             cur = conn.cursor()
             cur.execute(
